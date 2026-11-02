@@ -10,27 +10,27 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Timbraje interno: una sola tarjeta centrada, reloj grande, dos botones de marcación */
+/* Timbraje interno: inicio de sesión → panel del día (marcación + objetivos) → resumen al marcar salida */
 :root{
   --bg:#f5f6fb; --surface:#ffffff; --ink:#0d0f1a; --muted:#565c74; --line:#dde1ee;
   --blue:#2f9bdc; --violet:#8b4ff0; --accent:#6a5ae8; --accent-ink:#ffffff;
-  --ok:#1f8a5b; --bad:#c0392b;
+  --ok:#1f8a5b; --bad:#c0392b; --ok-soft:#e5f4ec;
   --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
   --body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0b0d16; --surface:#141827; --ink:#eef0fa; --muted:#a2a8c3; --line:#262c44;
-  --blue:#56b6f0; --violet:#a57bff; --accent:#8f84ff; --accent-ink:#0b0d16; --ok:#4cc38a; --bad:#ff7a6b; color-scheme:dark}}
+  --blue:#56b6f0; --violet:#a57bff; --accent:#8f84ff; --accent-ink:#0b0d16; --ok:#4cc38a; --bad:#ff7a6b; --ok-soft:#14291f; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0b0d16; --surface:#141827; --ink:#eef0fa; --muted:#a2a8c3; --line:#262c44;
-  --blue:#56b6f0; --violet:#a57bff; --accent:#8f84ff; --accent-ink:#0b0d16; --ok:#4cc38a; --bad:#ff7a6b; color-scheme:dark}
+  --blue:#56b6f0; --violet:#a57bff; --accent:#8f84ff; --accent-ink:#0b0d16; --ok:#4cc38a; --bad:#ff7a6b; --ok-soft:#14291f; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
   display:grid;place-items:start center;padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
-.card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:18px}
+.card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:18px;min-width:0}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .chip{background:#fff;border-radius:10px;padding:4px 8px;display:flex}
 .chip img{height:30px;width:auto;display:block}
@@ -40,25 +40,62 @@ body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family
   background:linear-gradient(90deg,var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;padding-block:6px}
 .clock span{font-size:14px;color:var(--muted)}
 label{display:grid;gap:6px;font-weight:600;font-size:14px}
-select,input{font:500 17px var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
-input{font-family:var(--mono);letter-spacing:.3em}
+select,input{font:500 17px var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%;min-width:0}
+#pin{font-family:var(--mono);letter-spacing:.3em}
 select:focus,input:focus{outline:none;border-color:var(--accent)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button{font:600 16px var(--body);border-radius:14px;padding:16px 10px;cursor:pointer;border:2px solid var(--ink);background:var(--ink);color:var(--bg)}
 button.out{background:transparent;color:var(--ink)}
 button:disabled{opacity:.5;cursor:wait}
 .link{background:none;border:none;color:var(--accent);padding:0;font-size:14px;justify-self:center;text-decoration:underline}
-.msg{min-height:1.5em;font-weight:600;text-align:center}
+.msg{min-height:1.5em;font-weight:600;text-align:center;margin:0}
 .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
-.today{display:grid;gap:8px}
-.today ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.today li{display:flex;justify-content:space-between;font-family:var(--mono);font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
-.today .tot{display:flex;justify-content:space-between;font-weight:600}
 .empty{color:var(--muted);font-size:14px}
 .setup{border:1.5px dashed var(--bad);border-radius:12px;padding:12px;font-size:14px;color:var(--muted)}
 .setup b{color:var(--bad)}
 small.foot{color:var(--muted);font-size:12.5px;text-align:center}
+.stack{display:grid;gap:14px}
+
+/* Panel del día */
+.who{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.who h1{margin:0;font:800 22px/1.15 var(--display);letter-spacing:-.01em}
+.state{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--muted)}
+.state i{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
+.state.on i{background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
+.state.on{color:var(--ink)}
+.state b{font-family:var(--mono);font-weight:500}
+.block{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:16px}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.head h2{margin:0;font:700 18px var(--display)}
+.count{font-family:var(--mono);font-size:14px;color:var(--muted)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .3s}
+.add{display:grid;grid-template-columns:1fr auto;gap:8px}
+.add input{font-size:16px;padding:11px 12px}
+.add button{padding:0 16px;font-size:15px}
+.objs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.objs li{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px}
+.objs li.done{background:var(--ok-soft);border-color:transparent}
+.objs input[type=checkbox]{width:22px;height:22px;margin:1px 0 0;accent-color:var(--ok);cursor:pointer}
+.objs .t{overflow-wrap:anywhere;font-size:15px}
+.objs li.done .t{color:var(--muted);text-decoration:line-through}
+.objs .h{display:inline-block;width:100%;font-family:var(--mono);font-size:12px;color:var(--ok);text-decoration:none}
+.objs .x{background:none;border:none;color:var(--muted);padding:0 4px;font-size:20px;line-height:1;border-radius:6px}
+.objs .x:hover{color:var(--bad)}
+.marks{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.marks li{display:flex;justify-content:space-between;font-family:var(--mono);font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.tot{display:flex;justify-content:space-between;font-weight:600}
+details summary{cursor:pointer;font-weight:600;font-size:15px}
+details[open] summary{margin-bottom:10px}
+
+/* Resumen del día */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;min-width:0}
+.stat b{display:block;font:800 clamp(20px,6.5vw,26px)/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+.sumlist{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px;overflow-wrap:anywhere}
+.sumlist .h{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.verdict{margin:0;padding:12px 14px;border-radius:12px;background:var(--bg);font-weight:600}
 </style>
 
 <main class="card">
@@ -74,35 +111,68 @@ small.foot{color:var(--muted);font-size:12.5px;text-align:center}
 
   <div class="setup" id="setup" hidden><b>Falta conectar.</b> Pega la URL de la aplicación web de Google Apps Script en <code>API_URL</code> dentro de este archivo.</div>
 
-  <form id="f" autocomplete="off">
-    <div style="display:grid;gap:14px">
-      <label>Socio
-        <select id="socio" required>
-          <option value="">Elige tu nombre</option>
-          <option>Diego Rosales</option>
-          <option>Mateo López</option>
-          <option>Steven Corella</option>
-          <option>Brandon Vega</option>
-        </select>
-      </label>
-      <label>PIN
-        <input id="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" required placeholder="••••">
-      </label>
-      <div class="actions">
-        <button type="submit" value="Entrada" id="bIn">Marcar entrada</button>
-        <button type="submit" value="Salida" class="out" id="bOut">Marcar salida</button>
-      </div>
-      <button type="button" class="link" id="ver">Ver mis marcaciones de hoy</button>
-    </div>
+  <!-- 1. Inicio de sesión -->
+  <form id="login" class="stack" autocomplete="off">
+    <label>Socio
+      <select id="socio" required>
+        <option value="">Elige tu nombre</option>
+        <option>Diego Rosales</option>
+        <option>Mateo López</option>
+        <option>Steven Corella</option>
+        <option>Brandon Vega</option>
+      </select>
+    </label>
+    <label>PIN
+      <input id="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" required placeholder="••••">
+    </label>
+    <button type="submit" id="bLogin">Iniciar sesión</button>
   </form>
 
-  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  <!-- 2. Panel del día -->
+  <section id="panel" class="stack" hidden aria-label="Tu día">
+    <div class="who">
+      <h1 id="nombre"></h1>
+      <button type="button" class="link" id="salir">Cerrar sesión</button>
+    </div>
+    <div class="state" id="state"><i></i><span id="stateTxt">Cargando tu día…</span></div>
+    <button type="button" id="marcar" disabled>Marcar entrada</button>
 
-  <section class="today" id="today" hidden aria-label="Marcaciones de hoy">
-    <span class="eyebrow">Hoy · <span id="quien"></span></span>
-    <ol id="lista"></ol>
-    <div class="tot"><span>Horas trabajadas hoy</span><span id="tot">0,00 h</span></div>
+    <div class="block">
+      <div class="head"><h2>Objetivos de hoy</h2><span class="count" id="count">0 de 0</span></div>
+      <div class="bar" aria-hidden="true"><span id="barra"></span></div>
+      <form class="add" id="nuevo" autocomplete="off">
+        <input id="texto" maxlength="200" placeholder="Ej.: Editar video de Zona iPhone" aria-label="Nuevo objetivo">
+        <button type="submit">Añadir</button>
+      </form>
+      <ul class="objs" id="objs"></ul>
+    </div>
+
+    <details class="block" id="detMarcas">
+      <summary>Marcaciones de hoy</summary>
+      <div class="stack" style="gap:8px">
+        <ol class="marks" id="lista"></ol>
+        <div class="tot"><span>Horas cerradas hoy</span><span id="tot">0 h</span></div>
+      </div>
+    </details>
+    <button type="button" class="link" id="verResumen" hidden>Ver resumen del día</button>
   </section>
+
+  <!-- 3. Resumen del día -->
+  <section id="resumen" class="stack" hidden aria-label="Resumen del día">
+    <div class="head"><h2 style="font-size:22px">Resumen del día</h2><span class="count" id="rFecha"></span></div>
+    <div class="stats">
+      <div class="stat"><b id="rHoras">0 h</b><span>trabajadas</span></div>
+      <div class="stat"><b id="rObj">0/0</b><span>objetivos</span></div>
+      <div class="stat"><b id="rPct">–</b><span>cumplimiento</span></div>
+    </div>
+    <p class="verdict" id="rTexto"></p>
+    <div class="block" id="rTurnosB"><h2 class="eyebrow" style="margin:0">Turnos</h2><ul class="sumlist" id="rTurnos"></ul></div>
+    <div class="block" id="rHechosB"><h2 class="eyebrow" style="margin:0">Cumplidos</h2><ul class="sumlist" id="rHechos"></ul></div>
+    <div class="block" id="rPendB"><h2 class="eyebrow" style="margin:0">Pendientes</h2><ul class="sumlist" id="rPend"></ul></div>
+    <button type="button" class="out" id="volver">Volver a mi día</button>
+  </section>
+
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
 
   <small class="foot">La hora la registra el servidor (zona Ecuador), no tu teléfono.</small>
 </main>
@@ -114,47 +184,162 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzem5LWkbz35i7Wcwrn8Bl6
 const $ = id => document.getElementById(id);
 const fmtH = new Intl.DateTimeFormat("es-EC",{timeZone:"America/Guayaquil",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
 const fmtF = new Intl.DateTimeFormat("es-EC",{timeZone:"America/Guayaquil",weekday:"long",day:"numeric",month:"long"});
-function tick(){const d=new Date();$("hora").textContent=fmtH.format(d);$("fecha").textContent=fmtF.format(d)}
+let token = null, dia = null, seq = 0;
+
+const guardar = (k,v) => {try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const leer = k => {try{return localStorage.getItem(k)}catch(e){return null}};
+
+function say(t,ok){const m=$("msg");m.textContent=t||"";m.className="msg "+(ok?"ok":"bad")}
+// 7.53 h → "7 h 32 min"
+function hm(h){const t=Math.round((h||0)*60),H=Math.floor(t/60),M=t%60;return H?(M?`${H} h ${M} min`:`${H} h`):`${M} min`}
+
+function tick(){
+  const d=new Date();$("hora").textContent=fmtH.format(d);$("fecha").textContent=fmtF.format(d);
+  if(dia&&dia.abierta) $("stateTxt").innerHTML=`En turno desde <b>${dia.abierta.hora}</b> · ${hm(Math.max(0,d-dia.abierta.desde)/36e5)}`;
+}
 tick();setInterval(tick,1000);
 
 if(!API_URL) $("setup").hidden=false;
-try{const s=localStorage.getItem("nexo_socio");if(s)$("socio").value=s}catch(e){}
+$("socio").value=leer("nexo_socio")||"";
 
-function say(t,ok){const m=$("msg");m.textContent=t;m.className="msg "+(ok?"ok":"bad")}
+/* ---------- Servidor ---------- */
+async function api(accion,datos={}){
+  if(!API_URL) throw new Error("sin-url");
+  // Sin cabeceras: el navegador lo envía como text/plain y Apps Script lo acepta sin bloqueo CORS
+  const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({accion,token,...datos})});
+  const r=await res.json();
+  if(r.sesion===false){cerrar(r.error);throw new Error("sesion")}
+  return r;
+}
+function sinRed(e){if(e.message!=="sesion")say(e.message==="sin-url"?"El timbraje aún no está conectado a Google Sheets.":"Sin conexión con el servidor. Revisa tu internet e intenta de nuevo.")}
 
-function show(r){
-  $("quien").textContent=r.socio;
-  const L=$("lista");L.innerHTML="";
-  if(!r.marcas.length){L.innerHTML='<li class="empty">Sin marcaciones hoy.</li>'}
-  r.marcas.forEach(m=>{const li=document.createElement("li");li.innerHTML="<span></span><span></span>";
-    li.children[0].textContent=m.tipo;li.children[1].textContent=m.hora;L.appendChild(li)});
-  $("tot").textContent=Number(r.horasHoy||0).toLocaleString("es-EC",{minimumFractionDigits:2,maximumFractionDigits:2})+" h";
-  $("today").hidden=false;
+/* ---------- Vistas ---------- */
+function vista(v){$("login").hidden=v!=="login";$("panel").hidden=v!=="panel";$("resumen").hidden=v!=="resumen"}
+
+function cerrar(aviso){
+  token=null;dia=null;guardar("nexo_token",null);
+  vista("login");say(aviso||"",!aviso);$("pin").focus();
 }
 
-async function send(accion){
+function pintar(r){
+  dia=r;
+  $("nombre").textContent="Hola, "+r.socio.split(" ")[0];
+  const st=$("state");st.classList.toggle("on",!!r.abierta);
+  if(!r.abierta) $("stateTxt").textContent=r.marcas.length?`Fuera de turno · hoy llevas ${hm(r.horasHoy)}`:"Aún no marcas entrada hoy";
+  tick();
+  const b=$("marcar");b.disabled=false;
+  b.textContent=r.abierta?"Marcar salida":"Marcar entrada";b.classList.toggle("out",!!r.abierta);
+
+  const objs=r.objetivos,hechos=objs.filter(o=>o.cumplido).length;
+  $("count").textContent=`${hechos} de ${objs.length}`;
+  $("barra").style.width=objs.length?(hechos/objs.length*100)+"%":"0";
+  const U=$("objs");U.innerHTML="";
+  if(!objs.length) U.innerHTML='<li class="empty" style="display:block;border-style:dashed">Escribe lo que vas a lograr hoy y márcalo cuando lo cumplas.</li>';
+  objs.forEach(o=>{
+    const li=document.createElement("li");li.className=o.cumplido?"done":"";
+    li.innerHTML='<input type="checkbox"><label class="t" style="display:block;font-weight:400;font-size:15px"></label><button type="button" class="x" aria-label="Borrar objetivo">×</button>';
+    const cb=li.children[0],t=li.children[1];
+    cb.id="o_"+o.id;cb.checked=o.cumplido;t.htmlFor=cb.id;t.textContent=o.texto;
+    if(o.id.startsWith("tmp")){cb.disabled=true;li.children[2].disabled=true}  // aún guardándose
+    if(o.cumplido&&o.hora){const h=document.createElement("span");h.className="h";h.textContent="Cumplido a las "+o.hora;t.appendChild(h)}
+    cb.addEventListener("change",()=>cambiar("cumplir",{id:o.id,cumplido:cb.checked},()=>{o.cumplido=cb.checked;o.hora=""}));
+    li.children[2].addEventListener("click",()=>{if(confirm(`¿Borrar "${o.texto}"?`))cambiar("borrar",{id:o.id},()=>{r.objetivos=r.objetivos.filter(x=>x!==o)})});
+    U.appendChild(li);
+  });
+
+  const L=$("lista");L.innerHTML="";
+  if(!r.marcas.length) L.innerHTML='<li class="empty">Sin marcaciones hoy.</li>';
+  r.marcas.forEach(m=>{const li=document.createElement("li");li.innerHTML="<span></span><span></span>";
+    li.children[0].textContent=m.tipo;li.children[1].textContent=m.hora;L.appendChild(li)});
+  $("tot").textContent=hm(r.horasHoy);
+  $("verResumen").hidden=!r.marcas.some(m=>m.tipo==="Salida");
+}
+
+// Cambios en objetivos: se ven al instante y luego se confirman con lo que diga el servidor
+async function cambiar(accion,datos,local){
+  local();pintar(dia);
+  const n=++seq;
+  try{
+    const r=await api(accion,datos);
+    if(n===seq) pintar(r);
+    say(r.ok?"":r.error,r.ok);
+  }catch(e){sinRed(e);if(n===seq&&token)estado()}
+}
+
+async function estado(){
+  try{const r=await api("estado");pintar(r);if(!r.ok)say(r.error)}catch(e){sinRed(e)}
+}
+
+function resumen(r){
+  const objs=r.objetivos,hechos=objs.filter(o=>o.cumplido),pend=objs.filter(o=>!o.cumplido);
+  const pct=objs.length?Math.round(hechos.length/objs.length*100):null;
+  $("rFecha").textContent=new Date(r.fecha+"T12:00:00").toLocaleDateString("es-EC",{day:"numeric",month:"short"});
+  $("rHoras").textContent=hm(r.horasHoy);
+  $("rObj").textContent=`${hechos.length}/${objs.length}`;
+  $("rPct").textContent=pct==null?"–":pct+"%";
+  $("rTexto").textContent=!objs.length?"No registraste objetivos hoy. Mañana anota al menos uno al iniciar tu turno."
+    :pct===100?"Cumpliste todos tus objetivos de hoy. ¡Buen trabajo!"
+    :`Cumpliste ${hechos.length} de ${objs.length}. ${pend.length===1?"Queda 1 pendiente":"Quedan "+pend.length+" pendientes"} para retomar.`;
+
+  // Turnos: cada entrada con su salida
+  const T=$("rTurnos");T.innerHTML="";let ent=null;
+  r.marcas.forEach(m=>{
+    if(m.tipo==="Entrada"){ent=m;return}
+    const li=document.createElement("li");li.textContent=`${ent?ent.hora:"?"} – ${m.hora} · ${hm(m.horas)}`;T.appendChild(li);ent=null;
+  });
+  if(ent){const li=document.createElement("li");li.textContent=`${ent.hora} – en curso`;T.appendChild(li)}
+  $("rTurnosB").hidden=!T.children.length;
+
+  const lista=(id,items,hora)=>{const U=$(id);U.innerHTML="";items.forEach(o=>{const li=document.createElement("li");li.textContent=o.texto;
+    if(hora&&o.hora){const s=document.createElement("span");s.className="h";s.textContent=" · "+o.hora;li.appendChild(s)}U.appendChild(li)});
+    $(id+"B").hidden=!items.length};
+  lista("rHechos",hechos,true);lista("rPend",pend,false);
+  vista("resumen");window.scrollTo(0,0);
+}
+
+/* ---------- Eventos ---------- */
+$("login").addEventListener("submit",async e=>{
+  e.preventDefault();
   const socio=$("socio").value,pin=$("pin").value.trim();
   if(!socio){say("Elige tu nombre.");$("socio").focus();return}
   if(!/^\d{4,6}$/.test(pin)){say("El PIN tiene de 4 a 6 números.");$("pin").focus();return}
-  if(!API_URL){say("El timbraje aún no está conectado a Google Sheets.");return}
-  try{localStorage.setItem("nexo_socio",socio)}catch(e){}
-  document.querySelectorAll("button").forEach(b=>b.disabled=true);
-  say("Enviando…",true);
+  guardar("nexo_socio",socio);
+  $("bLogin").disabled=true;say("Ingresando…",true);
   try{
-    // Sin cabeceras: el navegador lo envía como text/plain y Apps Script lo acepta sin bloqueo CORS
-    const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({socio,pin,accion,dispositivo:navigator.userAgent})});
-    const r=await res.json();
-    if(!r.ok){say(r.error||"No se pudo registrar.");return}
-    $("pin").value="";
-    say(accion==="consultar"?"Marcaciones de hoy actualizadas.":`${r.tipo} registrada a las ${r.hora}.`,true);
-    show(r);
-  }catch(e){
-    say("Sin conexión con el servidor. Revisa tu internet e intenta de nuevo.");
-  }finally{
-    document.querySelectorAll("button").forEach(b=>b.disabled=false);
-  }
-}
+    const r=await api("login",{socio,pin});
+    if(!r.ok){say(r.error||"No se pudo iniciar sesión.");return}
+    token=r.token;guardar("nexo_token",token);$("pin").value="";
+    say("");pintar(r);vista("panel");
+  }catch(e){sinRed(e)}finally{$("bLogin").disabled=false}
+});
 
-$("f").addEventListener("submit",e=>{e.preventDefault();send(e.submitter?.value||"Entrada")});
-$("ver").addEventListener("click",()=>send("consultar"));
+$("marcar").addEventListener("click",async()=>{
+  const accion=dia&&dia.abierta?"Salida":"Entrada";
+  const pend=dia?dia.objetivos.filter(o=>!o.cumplido).length:0;
+  if(accion==="Salida"&&pend&&!confirm(`Tienes ${pend} ${pend===1?"objetivo pendiente":"objetivos pendientes"}. ¿Marcar salida igual?`))return;
+  const b=$("marcar");b.disabled=true;say("Enviando…",true);seq++;
+  try{
+    const r=await api(accion,{dispositivo:navigator.userAgent});
+    pintar(r);
+    if(!r.ok){say(r.error);return}
+    say(`${r.tipo} registrada a las ${r.hora}.`,true);
+    if(r.tipo==="Salida") resumen(r);
+  }catch(e){sinRed(e)}finally{b.disabled=false}
+});
+
+$("nuevo").addEventListener("submit",e=>{
+  e.preventDefault();
+  const t=$("texto").value.replace(/\s+/g," ").trim();
+  if(!t||!dia){$("texto").focus();return}
+  $("texto").value="";
+  cambiar("agregar",{texto:t},()=>dia.objetivos.push({id:"tmp"+Date.now(),texto:t,cumplido:false,hora:""}));
+});
+
+$("salir").addEventListener("click",()=>{api("logout").catch(()=>{});cerrar()});
+$("verResumen").addEventListener("click",()=>dia&&resumen(dia));
+$("volver").addEventListener("click",()=>{say("");vista("panel")});
+
+// Si ya había iniciado sesión en este teléfono, entra directo a su día
+token=leer("nexo_token");
+if(token){vista("panel");estado()}
 </script>
