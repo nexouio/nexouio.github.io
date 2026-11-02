@@ -116,7 +116,7 @@ section{padding-block:72px;border-top:1px solid var(--line)}
   background:linear-gradient(160deg,#1b2140,#3a2a7a 60%,#2f9bdc)}
 .clip:nth-child(2){background:linear-gradient(160deg,#1b2140,#155b86 55%,#8b4ff0)}
 .clip .tc{font-family:var(--mono);font-size:11.5px;opacity:.85;display:flex;justify-content:space-between}
-.clip b{font-family:var(--display);font-size:22px;line-height:1.05}
+.clip b{font-family:var(--display);font-size:clamp(14px,3.6vw,22px);line-height:1.05;overflow-wrap:break-word;text-shadow:0 1px 8px rgba(0,0,0,.5)}
 .clip span.play{align-self:flex-start;font-size:13px;font-weight:600;background:rgba(255,255,255,.16);border-radius:999px;padding:6px 12px}
 table.kpi{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:8px}
 .kpi th,.kpi td{text-align:left;padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
@@ -129,10 +129,16 @@ table.kpi{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:8px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
 .filters button{font:500 14px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}@media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:440px){.grid{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}@media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .item{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .item .top{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .item h3{font-size:21px;font-weight:700}
+.item .cover{position:relative;display:block;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#1b2140,#3a2a7a 60%,#2f9bdc);color:#fff;text-decoration:none}
+.item .cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.item .cover:hover img{transform:scale(1.04)}
+.item .cover span{position:absolute;left:10px;bottom:10px;font-size:13px;font-weight:600;background:rgba(13,15,26,.72);border-radius:999px;padding:5px 11px;backdrop-filter:blur(4px)}
+.item .cover.empty{display:grid;place-items:center;font-family:var(--display);font-size:20px;font-weight:700;text-align:center;padding:16px}
+@media (max-width:440px){.grid{gap:10px}.item{padding:10px;gap:9px;border-radius:14px}.item h3{font-size:16.5px}.item .top{flex-direction:column;gap:2px;font-size:10.5px}.item .cover span{font-size:11.5px;padding:4px 9px;left:7px;bottom:7px}.item .links a{font-size:12px;padding:4px 9px}.item .cover.empty{font-size:16px}}
 .item .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
 .item .links a{font-size:13.5px;font-weight:600;text-decoration:none;border:1.5px solid var(--accent);color:var(--accent);border-radius:999px;padding:5px 12px}
 .item .links a:hover{background:var(--accent);color:var(--accent-ink)}
@@ -285,10 +291,10 @@ footer{border-top:1px solid var(--line);padding-block:28px 40px;font-size:14px;c
       <div class="card">
         <h3>Dos videos, dos objetivos</h3>
         <div class="reel">
-          <a class="clip" href="https://drive.google.com/file/d/15JoD8nZl8-TL7h5-dZQVBsrh4UUUKf1d/view" target="_blank" rel="noopener">
+          <a class="clip" href="https://drive.google.com/file/d/15JoD8nZl8-TL7h5-dZQVBsrh4UUUKf1d/view" target="_blank" rel="noopener" style="background:linear-gradient(180deg,rgba(13,15,26,.55),rgba(13,15,26,.1) 40%,rgba(13,15,26,.75)),url(img/portafolio/15JoD8nZl8-TL7h5-dZQVBsrh4UUUKf1d.jpg) center/cover">
             <span class="tc"><span>REC 01</span><span>00:54</span></span>
             <b>Noticiero</b><span class="play">Ver video ↗</span></a>
-          <a class="clip" href="https://drive.google.com/file/d/1qf-E6GowUVFZ7TdBJfPH0f41fdXTL_Bb/view" target="_blank" rel="noopener">
+          <a class="clip" href="https://drive.google.com/file/d/1qf-E6GowUVFZ7TdBJfPH0f41fdXTL_Bb/view" target="_blank" rel="noopener" style="background:linear-gradient(180deg,rgba(13,15,26,.55),rgba(13,15,26,.1) 40%,rgba(13,15,26,.75)),url(img/portafolio/1qf-E6GowUVFZ7TdBJfPH0f41fdXTL_Bb.jpg) center/cover">
             <span class="tc"><span>REC 02</span><span>00:41</span></span>
             <b>Emprendedor</b><span class="play">Ver video ↗</span></a>
         </div>
@@ -387,28 +393,29 @@ footer{border-top:1px solid var(--line);padding-block:28px 40px;font-size:14px;c
     </div>
   </section>
 
-  <footer><span>© 2026 NEXO · Agencia Creativa y Marketing Digital</span><span>WhatsApp 097 894 2764 · <a href="https://www.instagram.com/nexouio26/" target="_blank" rel="noopener">@nexouio26</a></span></footer>
+  <footer><span>© 2026 NEXO · Agencia Creativa y Marketing Digital</span><span>Contamos visitas y clics de forma anónima con Google Analytics.</span><span>WhatsApp 097 894 2764 · <a href="https://www.instagram.com/nexouio26/" target="_blank" rel="noopener">@nexouio26</a></span></footer>
 </main>
 
 <script>
 const D="https://drive.google.com/file/d/";
+// [negocio, rubro, ids de video en Drive, índice del video cuya miniatura se muestra en img/portafolio/ (-1 = sin miniatura)]
 const P=[
- ["Zona iPhone","Tecnología",["15JoD8nZl8-TL7h5-dZQVBsrh4UUUKf1d","1qf-E6GowUVFZ7TdBJfPH0f41fdXTL_Bb"]],
- ["Monoviche","Gastronomía",["1ljt-ikbsJj4eZAbYmHg1Ho2--tA9QSJc","1b4JuUUHiyAsUlmBK9DesqM7OwHPyPHZ8"]],
- ["Casa Grill","Gastronomía",["1uNRgj-Iwq1p-thOxVsgRCCULC8I4B-rZ","1C-AayM_-zEADVzH78RdZF5vHP8XD1Tke"]],
- ["Smile Restaurante","Gastronomía",["1KQCz9IF4Hnh4k43B3z-pDBvtsdWQALFb","1cQzVI-qCH2HKi1_5ZgwBYCOfXClFNzFg"]],
- ["More Cafetería","Gastronomía",["1oj0ONwzZSVlcA7QcF_kZTffP3_lAFaFR","1LtBjEE6mo8X7Ia1qbnFrmW-ofwDaD-gl"]],
- ["Jack n Beer","Gastronomía",["14xNZmvKp1o8WeFAtiNNCeWmy9ZzMbdrl","17K-HkNCbrPiMDze420W4LaL3dvYyQr8b"]],
- ["Bebidas","Gastronomía",["1VSucg8Xf6di1VS7kHhB_CGa7hcwGWOV4","1UN4qmS80Q0pscjZxa5ffNzwcVufcaEYR"]],
- ["Carnes","Gastronomía",["19XX-N7pTx7ObEDWZfVqkDzy0_BDYPzwz"]],
- ["Fale","Moda y belleza",["1C6t4m9tOl50eNJ23GGw_t9HXs0OFYJRp","1FC5C3yMTfrffZtkhPklAZ1qx9wNFU0Tn"]],
- ["Gaby Nails","Moda y belleza",["19M18cKaIbMt1Pm6TFr2MKwShRgWR77u7","1KUDY4gI7QpIQq5yaL3M5NtpuJy4d06ha"]],
- ["Estudio de tatuajes","Moda y belleza",["1R8_sTGd7P7dyzu7GH49IqeSKPjIgRPKY","1fYE4QKyuH09irbyoFkSmuyrF-IdCJtlt"]],
- ["Jadys Floristería","Comercio",["1uK1Oe-xCZVkvzaCKAbmH_N8qn74oMvl9","1UNSRNq51xKE4Ngs7c4wVZ71mg2upzNe5"]],
- ["Venta de autos","Comercio",["1mMsLWpQwGgdV69Sws1d_AsirelPjO3qQ","1NOk1dN6gm7Ej5FWDTY97Sc2moy7sdxFJ"]],
- ["Gimnasio","Servicios",["1q-Z4IK9JmKsm-CP8Z1vsqaTxQEChMZvk","1mh4kDwy0NU6x_wXSfetF7aXtwyS7vPnY"]],
- ["Cuidador de perros","Servicios",["1NmfC0ELN1kuNS9Tn-STOH2cDSYXxOzeS","1sksbWkOh18fCNTa-b6enB-fOK7itq9E7"]],
- ["Cheerleaders","Servicios",["17ClJO7jUVfu665QAIgQLDE9kaqJ9pQ6b"]]
+ ["Zona iPhone","Tecnología",["15JoD8nZl8-TL7h5-dZQVBsrh4UUUKf1d","1qf-E6GowUVFZ7TdBJfPH0f41fdXTL_Bb"],0],
+ ["Monoviche","Gastronomía",["1ljt-ikbsJj4eZAbYmHg1Ho2--tA9QSJc","1b4JuUUHiyAsUlmBK9DesqM7OwHPyPHZ8"],1],
+ ["Casa Grill","Gastronomía",["1uNRgj-Iwq1p-thOxVsgRCCULC8I4B-rZ","1C-AayM_-zEADVzH78RdZF5vHP8XD1Tke"],1],
+ ["Smile Restaurante","Gastronomía",["1KQCz9IF4Hnh4k43B3z-pDBvtsdWQALFb","1cQzVI-qCH2HKi1_5ZgwBYCOfXClFNzFg"],0],
+ ["More Cafetería","Gastronomía",["1oj0ONwzZSVlcA7QcF_kZTffP3_lAFaFR","1LtBjEE6mo8X7Ia1qbnFrmW-ofwDaD-gl"],0],
+ ["Jack n Beer","Gastronomía",["14xNZmvKp1o8WeFAtiNNCeWmy9ZzMbdrl","17K-HkNCbrPiMDze420W4LaL3dvYyQr8b"],1],
+ ["Bebidas","Gastronomía",["1VSucg8Xf6di1VS7kHhB_CGa7hcwGWOV4","1UN4qmS80Q0pscjZxa5ffNzwcVufcaEYR"],0],
+ ["Carnes","Gastronomía",["19XX-N7pTx7ObEDWZfVqkDzy0_BDYPzwz"],0],
+ ["Fale","Moda y belleza",["1C6t4m9tOl50eNJ23GGw_t9HXs0OFYJRp","1FC5C3yMTfrffZtkhPklAZ1qx9wNFU0Tn"],0],
+ ["Gaby Nails","Moda y belleza",["19M18cKaIbMt1Pm6TFr2MKwShRgWR77u7","1KUDY4gI7QpIQq5yaL3M5NtpuJy4d06ha"],0],
+ ["Estudio de tatuajes","Moda y belleza",["1R8_sTGd7P7dyzu7GH49IqeSKPjIgRPKY","1fYE4QKyuH09irbyoFkSmuyrF-IdCJtlt"],0],
+ ["Jadys Floristería","Comercio",["1uK1Oe-xCZVkvzaCKAbmH_N8qn74oMvl9","1UNSRNq51xKE4Ngs7c4wVZ71mg2upzNe5"],0],
+ ["Venta de autos","Comercio",["1mMsLWpQwGgdV69Sws1d_AsirelPjO3qQ","1NOk1dN6gm7Ej5FWDTY97Sc2moy7sdxFJ"],0],
+ ["Gimnasio","Servicios",["1q-Z4IK9JmKsm-CP8Z1vsqaTxQEChMZvk","1mh4kDwy0NU6x_wXSfetF7aXtwyS7vPnY"],1],
+ ["Cuidador de perros","Servicios",["1NmfC0ELN1kuNS9Tn-STOH2cDSYXxOzeS","1sksbWkOh18fCNTa-b6enB-fOK7itq9E7"],1],
+ ["Cheerleaders","Servicios",["17ClJO7jUVfu665QAIgQLDE9kaqJ9pQ6b"],-1]
 ];
 document.getElementById("nNeg").textContent=P.length;
 document.getElementById("nVid").textContent=P.reduce((s,p)=>s+p[2].length,0);
@@ -416,10 +423,13 @@ const cats=["Todos",...new Set(P.map(p=>p[1]))];
 const grid=document.getElementById("grid"),fil=document.getElementById("filters");
 function render(c){
   grid.innerHTML="";
-  P.filter(p=>c==="Todos"||p[1]===c).forEach(([n,r,ids])=>{
+  P.filter(p=>c==="Todos"||p[1]===c).forEach(([n,r,ids,k])=>{
     const el=document.createElement("article");el.className="item";
-    el.innerHTML=`<div class="top"><span>${r}</span><span>${ids.length} video${ids.length>1?"s":""} · 9:16</span></div><h3></h3><div class="links"></div>`;
+    el.innerHTML=`<a class="cover" target="_blank" rel="noopener"></a><div class="top"><span>${r}</span><span>${ids.length} video${ids.length>1?"s":""} · 9:16</span></div><h3></h3><div class="links"></div>`;
     el.querySelector("h3").textContent=n;
+    const cv=el.querySelector(".cover");cv.href=D+ids[Math.max(k,0)]+"/view";
+    if(k>=0){const im=document.createElement("img");im.src="img/portafolio/"+ids[k]+".jpg";im.alt="Cuadro del video de "+n;im.loading="lazy";im.decoding="async";im.width=360;im.height=640;cv.appendChild(im);cv.insertAdjacentHTML("beforeend","<span>▶ Ver video</span>")}
+    else{cv.classList.add("empty");cv.textContent=n+" ▶"}
     const L=el.querySelector(".links");
     ids.forEach((id,i)=>{const a=document.createElement("a");a.href=D+id+"/view";a.target="_blank";a.rel="noopener";a.textContent=ids.length>1?`Video ${i+1} ↗`:"Ver video ↗";L.appendChild(a)});
     grid.appendChild(el);
@@ -432,5 +442,25 @@ document.getElementById("copy").addEventListener("click",()=>{
   const t=document.getElementById("mail").textContent,o=document.getElementById("copied");
   const sel=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("mail"));const s=getSelection();s.removeAllRanges();s.addRange(r);o.textContent="Correo seleccionado: cópialo con Ctrl+C."};
   try{navigator.clipboard.writeText(t).then(()=>o.textContent="Correo copiado.",sel)}catch(e){sel()}
+  evento("copiar_correo",{});
+});
+
+// Google Analytics 4: queda apagado mientras GA_ID esté vacío. No se mide en localhost.
+const GA_ID="G-MM22XR8VTV";
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments)}
+const medir=GA_ID&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+if(medir){
+  const s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(s);
+  gtag("js",new Date());gtag("config",GA_ID);
+}
+function evento(nombre,datos){if(medir)gtag("event",nombre,datos)}
+// Un solo escucha para todos los clics que importan: WhatsApp, Instagram y videos
+document.addEventListener("click",e=>{
+  const a=e.target.closest("a[href]");if(!a)return;
+  const ubicacion=a.closest("section")?.id||(a.closest("header")?"menu":a.closest("footer")?"pie":"inicio");
+  if(a.href.includes("wa.me/"))evento("clic_whatsapp",{ubicacion});
+  else if(a.href.includes("instagram.com"))evento("clic_instagram",{ubicacion});
+  else if(a.href.includes("drive.google.com/file/")){const it=a.closest(".item");evento("ver_video",{ubicacion,negocio:it?it.querySelector("h3").textContent:"Zona iPhone"})}
 });
 </script>
