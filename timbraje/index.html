@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es-EC">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>NEXO Timbraje</title>
+<meta name="theme-color" content="#2f9bdc">
+<link rel="icon" type="image/png" href="../logo_nexo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Timbraje interno: una sola tarjeta centrada, reloj grande, dos botones de marcación */
+:root{
+  --bg:#f5f6fb; --surface:#ffffff; --ink:#0d0f1a; --muted:#565c74; --line:#dde1ee;
+  --blue:#2f9bdc; --violet:#8b4ff0; --accent:#6a5ae8; --accent-ink:#ffffff;
+  --ok:#1f8a5b; --bad:#c0392b;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0d16; --surface:#141827; --ink:#eef0fa; --muted:#a2a8c3; --line:#262c44;
+  --blue:#56b6f0; --violet:#a57bff; --accent:#8f84ff; --accent-ink:#0b0d16; --ok:#4cc38a; --bad:#ff7a6b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0d16; --surface:#141827; --ink:#eef0fa; --muted:#a2a8c3; --line:#262c44;
+  --blue:#56b6f0; --violet:#a57bff; --accent:#8f84ff; --accent-ink:#0b0d16; --ok:#4cc38a; --bad:#ff7a6b; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  display:grid;place-items:start center;padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.chip{background:#fff;border-radius:10px;padding:4px 8px;display:flex}
+.chip img{height:30px;width:auto;display:block}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.clock{text-align:center;padding:8px 0 4px;border-block:1px solid var(--line)}
+.clock b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(48px,16vw,64px);line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(90deg,var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;padding-block:6px}
+.clock span{font-size:14px;color:var(--muted)}
+label{display:grid;gap:6px;font-weight:600;font-size:14px}
+select,input{font:500 17px var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
+input{font-family:var(--mono);letter-spacing:.3em}
+select:focus,input:focus{outline:none;border-color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:600 16px var(--body);border-radius:14px;padding:16px 10px;cursor:pointer;border:2px solid var(--ink);background:var(--ink);color:var(--bg)}
+button.out{background:transparent;color:var(--ink)}
+button:disabled{opacity:.5;cursor:wait}
+.link{background:none;border:none;color:var(--accent);padding:0;font-size:14px;justify-self:center;text-decoration:underline}
+.msg{min-height:1.5em;font-weight:600;text-align:center}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+.today{display:grid;gap:8px}
+.today ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.today li{display:flex;justify-content:space-between;font-family:var(--mono);font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.today .tot{display:flex;justify-content:space-between;font-weight:600}
+.empty{color:var(--muted);font-size:14px}
+.setup{border:1.5px dashed var(--bad);border-radius:12px;padding:12px;font-size:14px;color:var(--muted)}
+.setup b{color:var(--bad)}
+small.foot{color:var(--muted);font-size:12.5px;text-align:center}
+</style>
+
+<main class="card">
+  <div class="top">
+    <span class="chip"><img src="../logo_nexo.png" alt="NEXO"></span>
+    <span class="eyebrow">Timbraje interno</span>
+  </div>
+
+  <div class="clock" aria-live="off">
+    <b id="hora">--:--:--</b>
+    <span id="fecha">Quito</span>
+  </div>
+
+  <div class="setup" id="setup" hidden><b>Falta conectar.</b> Pega la URL de la aplicación web de Google Apps Script en <code>API_URL</code> dentro de este archivo.</div>
+
+  <form id="f" autocomplete="off">
+    <div style="display:grid;gap:14px">
+      <label>Socio
+        <select id="socio" required>
+          <option value="">Elige tu nombre</option>
+          <option>Diego Rosales</option>
+          <option>Mateo López</option>
+          <option>Steven Corella</option>
+          <option>Brandon Vega</option>
+        </select>
+      </label>
+      <label>PIN
+        <input id="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" required placeholder="••••">
+      </label>
+      <div class="actions">
+        <button type="submit" value="Entrada" id="bIn">Marcar entrada</button>
+        <button type="submit" value="Salida" class="out" id="bOut">Marcar salida</button>
+      </div>
+      <button type="button" class="link" id="ver">Ver mis marcaciones de hoy</button>
+    </div>
+  </form>
+
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+  <section class="today" id="today" hidden aria-label="Marcaciones de hoy">
+    <span class="eyebrow">Hoy · <span id="quien"></span></span>
+    <ol id="lista"></ol>
+    <div class="tot"><span>Horas trabajadas hoy</span><span id="tot">0,00 h</span></div>
+  </section>
+
+  <small class="foot">La hora la registra el servidor (zona Ecuador), no tu teléfono.</small>
+</main>
+
+<script>
+// URL de la aplicación web de Google Apps Script (termina en /exec). Ver timbraje_apps_script/Codigo.gs
+const API_URL = "";
+
+const $ = id => document.getElementById(id);
+const fmtH = new Intl.DateTimeFormat("es-EC",{timeZone:"America/Guayaquil",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+const fmtF = new Intl.DateTimeFormat("es-EC",{timeZone:"America/Guayaquil",weekday:"long",day:"numeric",month:"long"});
+function tick(){const d=new Date();$("hora").textContent=fmtH.format(d);$("fecha").textContent=fmtF.format(d)}
+tick();setInterval(tick,1000);
+
+if(!API_URL) $("setup").hidden=false;
+try{const s=localStorage.getItem("nexo_socio");if(s)$("socio").value=s}catch(e){}
+
+function say(t,ok){const m=$("msg");m.textContent=t;m.className="msg "+(ok?"ok":"bad")}
+
+function show(r){
+  $("quien").textContent=r.socio;
+  const L=$("lista");L.innerHTML="";
+  if(!r.marcas.length){L.innerHTML='<li class="empty">Sin marcaciones hoy.</li>'}
+  r.marcas.forEach(m=>{const li=document.createElement("li");li.innerHTML="<span></span><span></span>";
+    li.children[0].textContent=m.tipo;li.children[1].textContent=m.hora;L.appendChild(li)});
+  $("tot").textContent=Number(r.horasHoy||0).toLocaleString("es-EC",{minimumFractionDigits:2,maximumFractionDigits:2})+" h";
+  $("today").hidden=false;
+}
+
+async function send(accion){
+  const socio=$("socio").value,pin=$("pin").value.trim();
+  if(!socio){say("Elige tu nombre.");$("socio").focus();return}
+  if(!/^\d{4,6}$/.test(pin)){say("El PIN tiene de 4 a 6 números.");$("pin").focus();return}
+  if(!API_URL){say("El timbraje aún no está conectado a Google Sheets.");return}
+  try{localStorage.setItem("nexo_socio",socio)}catch(e){}
+  document.querySelectorAll("button").forEach(b=>b.disabled=true);
+  say("Enviando…",true);
+  try{
+    // Sin cabeceras: el navegador lo envía como text/plain y Apps Script lo acepta sin bloqueo CORS
+    const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({socio,pin,accion,dispositivo:navigator.userAgent})});
+    const r=await res.json();
+    if(!r.ok){say(r.error||"No se pudo registrar.");return}
+    $("pin").value="";
+    say(accion==="consultar"?"Marcaciones de hoy actualizadas.":`${r.tipo} registrada a las ${r.hora}.`,true);
+    show(r);
+  }catch(e){
+    say("Sin conexión con el servidor. Revisa tu internet e intenta de nuevo.");
+  }finally{
+    document.querySelectorAll("button").forEach(b=>b.disabled=false);
+  }
+}
+
+$("f").addEventListener("submit",e=>{e.preventDefault();send(e.submitter?.value||"Entrada")});
+$("ver").addEventListener("click",()=>send("consultar"));
+</script>
